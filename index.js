@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
@@ -26,6 +27,8 @@ async function run() {
         const userCollection = client.db('parts').collection('users');
 
 
+
+            // user email 
         app.put('/user/:email',async(req,res)=>{
             const email = req.params.email;
             const user = req.body;
@@ -35,10 +38,14 @@ async function run() {
             $set:user,
         };
         const result  = await userCollection.updateOne(filter,updateDoc,options);
-        res.send(result);
+        const token = jwt.sign({email:email},process.env.ACCESS_TOKEN_SECRET, {expiresIn:'1h'})
+        res.send({result,token});
         })
 
 
+
+
+        // home 6 card data load 
         app.get('/service', async (req, res) => {
             const query = {};
             const cursor = serviceCollection.find(query);
@@ -48,6 +55,7 @@ async function run() {
 
         await client.connect();
 
+        // dashboard review data 
         app.get('/review', async (req, res) => {
             const query = {};
             const cursor = reviewsCollection.find(query);
