@@ -22,6 +22,22 @@ async function run() {
     try {
         await client.connect();
         const serviceCollection = client.db('parts').collection('services');
+        const reviewsCollection = client.db('parts').collection('reviews');
+        const userCollection = client.db('parts').collection('users');
+
+
+        app.put('/user/:email',async(req,res)=>{
+            const email = req.params.email;
+            const user = req.body;
+            const filter = {email:email};
+            const options = {upsert : true  };
+            const updateDoc = {           
+            $set:user,
+        };
+        const result  = await userCollection.updateOne(filter,updateDoc,options);
+        res.send(result);
+        })
+
 
         app.get('/service', async (req, res) => {
             const query = {};
@@ -31,7 +47,6 @@ async function run() {
         })
 
         await client.connect();
-        const reviewsCollection = client.db('parts').collection('reviews');
 
         app.get('/review', async (req, res) => {
             const query = {};
@@ -41,21 +56,21 @@ async function run() {
         })
 
 
+                //get single parts by id
+                app.get("/service/:id", async (req, res) => {
+                    const id = req.params.id;
+                    const query = { _id: ObjectId(id) };
+                    const tool = await serviceCollection.findOne(query);
+                    res.send(tool);
+                });
 
 
 
-
-        // single id 
-        app.get('/service/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: ObjectId(id) };
-            const result = await serviceCollection.findOne(query);
-            res.send(result);
-        });
+    
 
 
 
-        // post / add iteams
+        // post / add review
         app.post('/review',async(req,res)=>{
             const newService = req.body;
             const result = await reviewsCollection.insertOne(newService);
