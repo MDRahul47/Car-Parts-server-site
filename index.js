@@ -25,6 +25,54 @@ async function run() {
         const serviceCollection = client.db('parts').collection('services');
         const reviewsCollection = client.db('parts').collection('reviews');
         const userCollection = client.db('parts').collection('users');
+        const ordersCollection = client.db('parts').collection('orders');
+
+       
+//update quantity
+app.put("/update/:id", async (req, res) => {
+    const id = req.params.id;
+    const object = req.body;
+    
+    const filter = { _id: ObjectId(id) };
+    const options = { upsert: true };
+    const updateDoc = {
+      $set: {
+        Aquantity: object.updatedQuantity,
+      },
+    };
+    console.log(updateDoc);
+    const result = await serviceCollection.updateOne(
+      filter,
+      updateDoc,
+      options
+    );
+    res.send(result);
+  });
+
+
+  // post add items
+  app.post("/order", async (req, res) => {
+    const order = req.body;
+    const result = await ordersCollection.insertOne(order);
+    res.send(result);
+  });
+
+  app.get('/order', async (req, res) => {
+    const users= await ordersCollection.find().toArray();
+    res.send(users);  
+   })
+
+  app.put("/user/admin/:email", async (req, res) => {
+    const email = req.params.email;
+    const filter = { email: email };
+    const updateDoc = {
+      $set: { role: "admin" },
+    };
+    const result = await userCollection.updateOne(filter, updateDoc);
+    res.send(result);
+  });
+
+
 
 
 
@@ -42,6 +90,13 @@ async function run() {
         res.send({result,token});
         })
 
+        app.get('/user', async (req, res) => {
+         const users= await userCollection.find().toArray();
+         res.send(users);  
+        })
+
+
+       
 
 
 
@@ -74,14 +129,19 @@ async function run() {
 
 
 
-    
-
-
-
         // post / add review
         app.post('/review',async(req,res)=>{
             const newService = req.body;
             const result = await reviewsCollection.insertOne(newService);
+            res.send(result);
+          });
+
+
+
+        // post / add parts
+        app.post('/service',async(req,res)=>{
+            const newService = req.body;
+            const result = await serviceCollection.insertOne(newService);
             res.send(result);
           });
 
