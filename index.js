@@ -53,6 +53,20 @@ app.put("/update/:id", async (req, res) => {
   });
 
 
+//   app.delete("/orders/:id", async (req, res) => {
+//     const id = req.params.id;
+//     const query = { _id: ObjectId(id) };
+//     const result = await ordersCollection.deleteOne(query);
+//     res.send(result);
+// });
+
+
+
+
+
+
+
+
   // post add items
   app.post("/order", async (req, res) => {
     const order = req.body;
@@ -113,6 +127,8 @@ app.put("/update/:id", async (req, res) => {
 
         await client.connect();
 
+
+        
         // dashboard review data 
         app.get('/review', async (req, res) => {
             const query = {};
@@ -168,3 +184,7 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(` VAI AYBAR PERA DIDS NA ${port}`);
 })
+
+
+
+// the end 
